@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AORI Demo — Suporte Técnico</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050D1E;--bg2:#0A1628;--bg3:#0F1F38;
+  --cyan:#00C5FF;--cyan2:#00E5FF;--blue:#1A5CFF;
+  --white:#F0F6FF;--gray:#8AA3C8;--gray2:#4A6585;
+  --border:rgba(0,197,255,0.12);--border2:rgba(0,197,255,0.25);
+  --card:rgba(10,22,40,0.9);
+  --green:#00D97E;--amber:#FFB020;--red:#FF4D4F;
+}
+body{
+  background:var(--bg);color:var(--white);
+  font-family:'Segoe UI',system-ui,sans-serif;
+  font-size:14px;height:100vh;display:flex;flex-direction:column;overflow:hidden;
+}
+.topbar{
+  height:52px;background:rgba(5,13,30,0.97);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.logo{font-size:20px;font-weight:800;letter-spacing:.12em;color:var(--cyan)}
+.domain-badge{
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(0,197,255,.1);border:1px solid var(--border2);
+  color:var(--cyan);padding:4px 12px;border-radius:20px;
+}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.status-txt{font-size:12px;color:var(--gray)}
+.reset-btn{
+  font-size:12px;color:var(--gray);background:transparent;
+  border:1px solid rgba(255,255,255,.1);border-radius:4px;
+  padding:4px 12px;cursor:pointer;transition:all .2s;font-family:inherit;
+}
+.reset-btn:hover{color:var(--white);border-color:rgba(255,255,255,.25)}
+.main{display:flex;flex:1;overflow:hidden}
+
+/* LEFT PANEL */
+.chat-panel{
+  width:65%;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;background:var(--bg2);
+}
+.panel-header{
+  padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title{font-size:13px;font-weight:600;letter-spacing:.04em}
+.ticket-count{
+  font-size:11px;color:var(--gray);background:rgba(255,255,255,.05);
+  border-radius:10px;padding:2px 8px;
+}
+.quick-scenarios{
+  padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.quick-label{
+  font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--gray2);margin-bottom:7px;display:block;
+}
+.scenarios{display:flex;flex-direction:column;gap:5px}
+.scenario-btn{
+  text-align:left;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);border-radius:6px;
+  padding:7px 11px;cursor:pointer;transition:all .18s;color:var(--white);
+  font-size:12px;font-family:inherit;line-height:1.4;
+}
+.scenario-btn:hover{background:rgba(0,197,255,.06);border-color:var(--border2);color:var(--cyan)}
+.sc-tag{
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  margin-right:7px;padding:2px 6px;border-radius:3px;display:inline-block;
+}
+.sc-tag.crit{background:rgba(255,77,79,.15);color:#FF4D4F}
+.sc-tag.med{background:rgba(255,176,32,.15);color:#FFB020}
+.sc-tag.low{background:rgba(0,217,126,.15);color:#00D97E}
+
+.messages{
+  flex:1;overflow-y:auto;padding:14px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.messages::-webkit-scrollbar{width:3px}
+.messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.msg{display:flex;flex-direction:column;gap:3px;animation:msgIn .3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.user{align-items:flex-end}
+.msg.aori{align-items:flex-start}
+.msg-bubble{
+  max-width:90%;padding:9px 13px;border-radius:10px;
+  font-size:13px;line-height:1.5;
+}
+.msg.user .msg-bubble{
+  background:rgba(26,92,255,.22);border:1px solid rgba(26,92,255,.3);
+  border-bottom-right-radius:3px;
+}
+.msg.aori .msg-bubble{
+  background:var(--card);border:1px solid var(--border);
+  border-bottom-left-radius:3px;
+}
+.msg-sender{font-size:11px;font-weight:600;color:var(--cyan);margin-bottom:3px}
+.msg-meta{font-size:10px;color:var(--gray2)}
+
+.result-card{
+  background:rgba(0,197,255,.04);border:1px solid var(--border2);
+  border-radius:7px;padding:11px;margin-top:7px;
+}
+.result-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;font-size:12px;
+}
+.result-row+.result-row{border-top:1px solid rgba(255,255,255,.05)}
+.result-key{color:var(--gray)}
+.result-val{font-weight:600}
+.result-val.n1{color:var(--green)}
+.result-val.n2{color:var(--amber)}
+.result-val.n3{color:var(--red)}
+.result-val.critical{color:var(--red)}
+.result-val.high{color:var(--amber)}
+.result-val.low{color:var(--green)}
+.resolution-box{
+  margin-top:9px;padding:9px;
+  background:rgba(0,217,126,.04);border:1px solid rgba(0,217,126,.14);
+  border-radius:6px;font-size:12px;color:var(--gray);line-height:1.55;
+}
+.resolution-box strong{
+  color:var(--green);display:block;margin-bottom:4px;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+}
+
+.quick-replies{
+  padding:8px 14px 4px;display:flex;flex-wrap:wrap;gap:6px;
+  border-top:1px solid var(--border);background:var(--bg2);
+}
+.qr-chip{
+  font-size:11px;padding:4px 10px;border-radius:14px;cursor:pointer;
+  background:rgba(0,197,255,.08);border:1px solid rgba(0,197,255,.2);
+  color:var(--cyan);transition:all .15s;white-space:nowrap;
+}
+.qr-chip:hover{background:rgba(0,197,255,.18);border-color:var(--cyan)}
+.quick-replies-label{font-size:10px;color:var(--gray2);width:100%;margin-bottom:2px;letter-spacing:.06em}
+.input-area{
+  padding:12px 14px;border-top:1px solid var(--border);
+  flex-shrink:0;background:var(--bg2);
+}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.ticket-input{
+  flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:7px;padding:10px 13px;color:var(--white);font-family:inherit;
+  font-size:13px;resize:none;height:50px;outline:none;transition:border-color .2s;
+}
+.ticket-input::placeholder{color:var(--gray2)}
+.ticket-input:focus{border-color:var(--border2)}
+.send-btn{
+  width:50px;height:50px;border-radius:7px;border:none;flex-shrink:0;
+  background:var(--cyan);color:#050D1E;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.send-btn:hover{background:var(--cyan2)}
+.send-btn:disabled{opacity:.35;cursor:not-allowed}
+.send-btn svg{width:17px;height:17px}
+
+/* RIGHT PANEL */
+.orch-panel{
+  flex:1;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;
+}
+.orch-header{
+  padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;gap:10px;
+}
+.pulse{
+  width:8px;height:8px;border-radius:50%;background:var(--cyan);flex-shrink:0;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.orch-title{font-size:13px;font-weight:600;letter-spacing:.04em}
+.orch-sub{font-size:11px;color:var(--gray);margin-left:auto}
+
+.orch-body{
+  flex:1;overflow-y:auto;padding:18px;
+  display:flex;flex-direction:column;
+}
+.orch-body::-webkit-scrollbar{width:3px}
+.orch-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.idle-state{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;color:var(--gray2);padding:40px;
+}
+.idle-icon{
+  width:56px;height:56px;border-radius:50%;
+  border:1px dashed rgba(0,197,255,.2);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+}
+.idle-icon svg{width:24px;height:24px;stroke:rgba(0,197,255,.3);fill:none;stroke-width:1.5}
+.idle-txt{font-size:13px;line-height:1.65;margin-bottom:8px}
+.idle-hint{font-size:11px;opacity:.5}
+
+/* PIPELINE */
+.pipeline{display:none;flex-direction:column;margin-bottom:18px}
+.step{display:flex;gap:0;opacity:.28;transition:opacity .35s}
+.step.active{opacity:1}
+.step.done{opacity:.65}
+.step-left{
+  display:flex;flex-direction:column;align-items:center;
+  width:34px;flex-shrink:0;
+}
+.step-icon{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  transition:all .3s;position:relative;z-index:1;
+}
+.step.active .step-icon{background:rgba(0,197,255,.14);border-color:var(--cyan)}
+.step.done .step-icon{background:rgba(0,217,126,.1);border-color:rgba(0,217,126,.35)}
+.step-line{
+  width:1px;flex:1;min-height:20px;
+  background:rgba(255,255,255,.05);margin:0 auto;
+}
+.step:last-child .step-line{display:none}
+.step-content{padding:3px 0 16px 11px;flex:1}
+.step-row{display:flex;align-items:center;gap:8px}
+.step-name{
+  font-size:12px;font-weight:600;color:var(--gray2);
+  letter-spacing:.04em;transition:color .3s;
+}
+.step.active .step-name{color:var(--cyan)}
+.step.done .step-name{color:var(--green)}
+.step-detail{
+  font-size:11px;color:var(--gray2);line-height:1.5;
+  max-height:0;overflow:hidden;transition:max-height .4s ease;
+  margin-top:0;
+}
+.step.active .step-detail,.step.done .step-detail{max-height:80px;margin-top:4px}
+.step-meta{display:flex;gap:8px;margin-top:5px;flex-wrap:wrap}
+.step-time{font-size:10px;color:var(--cyan);background:rgba(0,197,255,.08);padding:1px 6px;border-radius:4px}
+.step-agent{font-size:10px;color:var(--amber);background:rgba(255,176,32,.08);padding:1px 6px;border-radius:4px}
+.step-sys{font-size:10px;color:var(--gray2);background:rgba(255,255,255,.04);padding:1px 6px;border-radius:4px}
+.step-spinner{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid rgba(0,197,255,.25);border-top-color:var(--cyan);
+  animation:spin .55s linear infinite;display:none;
+}
+.step.active .step-spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ANALYSIS */
+.analysis-panel{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:15px;opacity:0;transform:translateY(10px);
+  transition:all .4s ease;
+}
+.analysis-panel.visible{opacity:1;transform:none}
+.analysis-title{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:13px;display:flex;align-items:center;gap:8px;
+}
+.analysis-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.classification{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.class-item{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:6px;padding:9px 11px;
+}
+.class-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2);margin-bottom:3px}
+.class-val{font-size:16px;font-weight:700}
+.class-val.n1{color:var(--green)}
+.class-val.n2{color:var(--amber)}
+.class-val.n3{color:var(--red)}
+.class-val.critical{color:var(--red)}
+.class-val.high{color:var(--amber)}
+.class-val.low{color:var(--green)}
+
+.agent-selected{
+  background:rgba(0,197,255,.05);border:1px solid var(--border2);
+  border-radius:6px;padding:10px 12px;margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.agent-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(0,197,255,.14);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--cyan);flex-shrink:0;letter-spacing:.04em;
+}
+.agent-info{flex:1}
+.agent-name{font-size:13px;font-weight:600}
+.agent-role{font-size:11px;color:var(--gray);margin-top:2px}
+.agent-status{font-size:10px;color:var(--green);letter-spacing:.06em}
+
+.similar-tickets{margin-bottom:12px}
+.sim-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray2);margin-bottom:7px}
+.sim-item{
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);
+  border-radius:5px;padding:6px 10px;margin-bottom:5px;
+  display:flex;align-items:center;gap:8px;font-size:11px;
+}
+.sim-id{color:var(--cyan);font-weight:600;flex-shrink:0;font-size:10px;letter-spacing:.04em}
+.sim-txt{color:var(--gray);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sim-resolved{
+  font-size:10px;color:var(--green);flex-shrink:0;
+  background:rgba(0,217,126,.1);border-radius:3px;padding:1px 6px;
+}
+
+.resolution-output{
+  background:rgba(0,217,126,.03);border:1px solid rgba(0,217,126,.14);
+  border-radius:7px;padding:12px;
+}
+.res-title{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:9px}
+.res-steps{display:flex;flex-direction:column;gap:6px}
+.res-step{display:flex;gap:9px;align-items:flex-start}
+.res-step-num{
+  width:19px;height:19px;border-radius:50%;flex-shrink:0;margin-top:1px;
+  background:rgba(0,217,126,.13);border:1px solid rgba(0,217,126,.28);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:var(--green);
+}
+.res-step-txt{font-size:11px;color:var(--gray);line-height:1.5}
+
+.conf-bar{margin-top:12px}
+.conf-label{
+  font-size:10px;color:var(--gray2);margin-bottom:5px;
+  display:flex;justify-content:space-between;
+}
+.conf-label span{color:var(--cyan);font-weight:600}
+.conf-track{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.conf-fill{height:100%;border-radius:2px;background:var(--cyan);width:0;transition:width 1.1s ease .4s}
+</style>
+<style>#aori-nav~* .topbar,body>.topbar{margin-top:36px!important}.topbar{top:36px!important}</style>
+</head>
+<body>
+<div id="aori-nav" style="position:fixed;top:0;left:0;right:0;height:36px;background:rgba(5,13,30,0.97);border-bottom:1px solid rgba(0,197,255,0.15);display:flex;align-items:center;padding:0 16px;gap:16px;z-index:9999;font-family:'Segoe UI',system-ui,sans-serif;">
+  <a href="index.html" style="display:flex;align-items:center;gap:7px;text-decoration:none;color:#8AA3C8;font-size:11px;letter-spacing:.04em;transition:color .15s;" onmouseover="this.style.color='#00C5FF'" onmouseout="this.style.color='#8AA3C8'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Voltar ao portal
+  </a>
+  <div style="height:14px;width:1px;background:rgba(255,255,255,0.08)"></div>
+  <span style="font-size:11px;font-weight:700;letter-spacing:.14em;color:#00C5FF;">AORI</span>
+  <span id="nav-page-title" style="font-size:10px;color:#4A6585;letter-spacing:.06em;text-transform:uppercase;"></span>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('nav-page-title');
+  if(el){var t=document.title.replace('AORI — ','').replace('AORI - ','');el.textContent=t;}
+})();
+</script>
+
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">AORI</div>
+    <div class="domain-badge">Suporte Técnico — IT</div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot"></div>
+    <span class="status-txt">Orquestrador ativo</span>
+    <button class="reset-btn" onclick="resetDemo()">Resetar demo</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="chat-panel">
+    <div class="panel-header">
+      <span class="panel-title">Demandas recebidas</span>
+      <span class="ticket-count" id="ticket-count">0 chamados</span>
+    </div>
+
+    <div class="quick-scenarios">
+      <span class="quick-label">Cenários prontos — clique para simular</span>
+      <div class="scenarios">
+        <button class="scenario-btn" onclick="useScenario(0)"><span class="sc-tag crit">Indústria</span>Linha de produção parada — falha no sistema de controle de qualidade</button>
+        <button class="scenario-btn" onclick="useScenario(1)"><span class="sc-tag med">Vendas</span>Proposta travada na aprovação há 5 dias sem resposta do responsável</button>
+        <button class="scenario-btn" onclick="useScenario(2)"><span class="sc-tag low">Produto</span>Cliente solicita troca de produto danificado na entrega</button>
+        <button class="scenario-btn" onclick="useScenario(3)"><span class="sc-tag med">Serviços</span>Empresa quer adicionar módulo de gestão de estoque ao contrato atual</button>
+        <button class="scenario-btn" onclick="useScenario(4)"><span class="sc-tag crit">Portab.</span>Solicitação de portabilidade de número corporativo para nova operadora</button>
+        <button class="scenario-btn" onclick="useScenario(5)"><span class="sc-tag low">RH</span>Colaborador não consegue registrar férias no sistema de RH</button>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="msg aori">
+        <div class="msg-sender">AORI</div>
+        <div class="msg-bubble">Olá. Sou o orquestrador AORI para Suporte Técnico. Descreva seu chamado ou selecione um cenário acima para ver a orquestração agêntica em tempo real.</div>
+        <div class="msg-meta">Agora mesmo</div>
+      </div>
+    </div>
+
+    <div class="quick-replies" id="quick-replies" style="display:none"></div>
+    <div class="input-area">
+      <div class="input-row">
+        <textarea class="ticket-input" id="ticket-input"
+          placeholder="Descreva o problema técnico..."
+          onkeydown="handleKey(event)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="submitTicket()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="orch-panel">
+    <div class="orch-header">
+      <div class="pulse"></div>
+      <span class="orch-title">Orquestração AORI em tempo real</span>
+      <span class="orch-sub" id="orch-sub">Aguardando demanda</span>
+    </div>
+
+    <div class="orch-body" id="orch-body">
+
+      <div class="idle-state" id="idle-state">
+        <div class="idle-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="idle-txt">O orquestrador AORI aguarda uma demanda.<br>Cada passo da arquitetura será exibido aqui.</div>
+        <div class="idle-hint">Selecione um cenário ou escreva um chamado</div>
+      </div>
+
+      <div class="pipeline" id="pipeline">
+        <div class="step" id="step-0">
+          <div class="step-left"><div class="step-icon">📥</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-row"><div class="step-name">Recebendo demanda</div><div class="step-spinner"></div></div>
+            <div class="step-detail" id="d0">Demanda recebida via canal de entrada. Iniciando processamento em linguagem natural.</div>
+          </div>
+        </div>
+        <div class="step" id="step-1">
+          <div class="step-left"><div class="step-icon">🧠</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-row"><div class="step-name">LLM Orquestrador analisando</div><div class="step-spinner"></div></div>
+            <div class="step-detail" id="d1">Interpretando contexto, intenção e impacto potencial da demanda recebida.</div>
+          </div>
+        </div>
+        <div class="step" id="step-2">
+          <div class="step-left"><div class="step-icon">🔍</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-row"><div class="step-name">Classificando urgência e nível</div><div class="step-spinner"></div></div>
+            <div class="step-detail" id="d2">Determinando N1/N2/N3, prioridade, categoria técnica e impacto operacional.</div>
+          </div>
+        </div>
+        <div class="step" id="step-3">
+          <div class="step-left"><div class="step-icon">🎯</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-row"><div class="step-name">Selecionando agente de domínio</div><div class="step-spinner"></div></div>
+            <div class="step-detail" id="d3">Identificando agente especializado e definindo rota de atendimento adequada.</div>
+          </div>
+        </div>
+        <div class="step" id="step-4">
+          <div class="step-left"><div class="step-icon">📚</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-row"><div class="step-name">Consultando base histórica</div><div class="step-spinner"></div></div>
+            <div class="step-detail" id="d4">Buscando chamados similares resolvidos. Analisando padrões e resoluções efetivas.</div>
+          </div>
+        </div>
+        <div class="step" id="step-5">
+          <div class="step-left"><div class="step-icon">⚡</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-row"><div class="step-name">Gerando resolução estruturada</div><div class="step-spinner"></div></div>
+            <div class="step-detail" id="d5">Compondo resposta baseada em evidências históricas e contexto da demanda atual.</div>
+          </div>
+        </div>
+        <div class="step" id="step-6">
+          <div class="step-left"><div class="step-icon">✅</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-row"><div class="step-name">Resposta entregue</div><div class="step-spinner"></div></div>
+            <div class="step-detail" id="d6">Orquestração concluída. Chamado classificado, roteado e resolução entregue.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-panel" id="analysis-panel">
+        <div class="analysis-title">Resultado da análise</div>
+
+        <div class="classification">
+          <div class="class-item"><div class="class-label">Nível</div><div class="class-val" id="r-nivel">N1</div></div>
+          <div class="class-item"><div class="class-label">Prioridade</div><div class="class-val" id="r-prio">Baixa</div></div>
+          <div class="class-item"><div class="class-label">Categoria</div><div class="class-val" id="r-cat" style="font-size:12px">Acesso</div></div>
+          <div class="class-item"><div class="class-label">Confiança</div><div class="class-val" id="r-conf">96%</div></div>
+        </div>
+
+        <div class="agent-selected">
+          <div class="agent-avatar" id="r-avatar">N1</div>
+          <div class="agent-info">
+            <div class="agent-name" id="r-agent-name">Agente IT — Nível 1</div>
+            <div class="agent-role" id="r-agent-role">Suporte de primeiro nível</div>
+          </div>
+          <div class="agent-status">Ativo</div>
+        </div>
+
+        <div class="similar-tickets">
+          <div class="sim-label">Chamados similares identificados</div>
+          <div id="similar-list"></div>
+        </div>
+
+        <div class="resolution-output">
+          <div class="res-title">Resolução recomendada</div>
+          <div class="res-steps" id="res-steps"></div>
+          <div class="conf-bar">
+            <div class="conf-label"><span>Efetividade histórica</span><span id="conf-pct">94%</span></div>
+            <div class="conf-track"><div class="conf-fill" id="conf-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SC = [
+  {
+    text:"Linha de produção parada. Sistema de controle de qualidade retornou erro crítico E-7731. Turno da tarde afetado desde 14h20.",
+    nivel:"N3",nclass:"n3",prio:"Crítica",prioClass:"critical",cat:"Indústria / MES",conf:"97",
+    agent:"Agente IT — Sistemas Industriais",role:"Especialista MES e automação industrial",avatar:"MES",
+    d1:"Falha crítica em sistema MES detectada. Código E-7731 indica timeout na comunicação com CLP da linha 3.",
+    d2:"Classificado N3 — Crítico. Linha de produção parada. Impacto financeiro estimado: R$12k/hora.",
+    d3:"Roteando para Agente de Sistemas Industriais. Acionamento do engenheiro de turno via Módulo 3.",
+    d4:"6 ocorrências do erro E-7731 nos últimos 90 dias. Causa raiz: falha de rede no switch industrial.",
+    d5:"Resolução estruturada: reset controlado do CLP + verificação de cabos de rede industrial.",
+    stepsMeta:[
+      {time:"0,4s", agent:"AORI", sys:"Canal MES → API Gateway"},
+      {time:"0,9s", agent:"AORI + Módulo 01", sys:"LLM · Base histórica MES"},
+      {time:"0,7s", agent:"Módulo 01", sys:"Classificador industrial"},
+      {time:"0,6s", agent:"Módulo 03", sys:"AI Gateway → Agente MES"},
+      {time:"1,1s", agent:"Agente MES", sys:"ServiceNow · Base 847 chamados"},
+      {time:"0,8s", agent:"Agente MES + Módulo 02", sys:"Runbook E-7731"},
+      {time:"0,4s", agent:"AORI", sys:"DHuO → ServiceNow · Teams"}
+    ],
+    similar:[
+      {id:"TKT-4821",txt:"Erro E-7731 — CLP linha 3 timeout",res:"Resolvido em 18min"},
+      {id:"TKT-4502",txt:"MES parado — falha switch industrial",res:"Resolvido em 24min"},
+      {id:"TKT-4109",txt:"Linha produção parada — erro comunicação CLP",res:"Resolvido em 31min"}
+    ],
+    steps:["Verificar status do switch industrial no rack da linha 3 (porta 7)","Executar reset controlado do CLP: desligar e aguardar 30 segundos antes de religar","Verificar integridade do cabo de rede entre CLP e servidor MES","Reiniciar serviço MES no servidor: sudo systemctl restart mes-service","Confirmar retomada da linha com o supervisor de produção e registrar ocorrência"],
+    confPct:"97",
+    resp:"Chamado N3 industrial roteado para Agente MES. Código E-7731 identificado em 6 casos anteriores — todos resolvidos com reset do CLP e verificação de rede. Engenheiro de turno acionado via Módulo 3. Tempo médio de resolução: 24 minutos."
+  },
+  {
+    text:"Temos uma proposta de R$280k enviada ao cliente Grupo Meridian há 5 dias sem nenhuma resposta. O responsável comercial não está acessível.",
+    nivel:"N2",nclass:"n2",prio:"Alta",prioClass:"high",cat:"Vendas / CRM",conf:"94",
+    agent:"Agente VND — Suporte Comercial",role:"Especialista em gestão de pipeline e aprovações",avatar:"VND",
+    d1:"Proposta de alto valor parada em aprovação. Risco de perda por inatividade e falta de follow-up.",
+    d2:"Classificado N2 — Alto. Proposta acima de R$250k requer escalada automática após 72h sem resposta.",
+    d3:"Roteando para Agente Comercial. Acionamento do gerente de contas e diretor de vendas via Módulo 3.",
+    d4:"23 propostas similares analisadas. 78% convertidas quando follow-up ocorre em até 7 dias.",
+    d5:"Plano de ação: reengajamento estruturado com gerente sênior e proposta de reunião executiva.",
+    stepsMeta:[
+      {time:"0,4s", agent:"AORI", sys:"Canal CRM → API Gateway"},
+      {time:"0,8s", agent:"AORI + Módulo 01", sys:"LLM · Base pipeline comercial"},
+      {time:"0,6s", agent:"Módulo 01", sys:"Classificador de risco comercial"},
+      {time:"0,7s", agent:"Módulo 03", sys:"AI Gateway → Agente VND"},
+      {time:"0,9s", agent:"Agente VND", sys:"Salesforce · Histórico de propostas"},
+      {time:"0,8s", agent:"Agente VND + Módulo 02", sys:"Playbook de reengajamento"},
+      {time:"0,4s", agent:"AORI", sys:"DHuO → Salesforce · E-mail · Teams"}
+    ],
+    similar:[
+      {id:"OPP-1892",txt:"Proposta R$310k — sem resposta 6 dias",res:"Convertida em 9 dias"},
+      {id:"OPP-1654",txt:"Grupo Meridian — proposta anterior travada",res:"Convertida em 12 dias"},
+      {id:"OPP-1423",txt:"Proposta alto valor — responsável inacessível",res:"Convertida em 7 dias"}
+    ],
+    steps:["Enviar e-mail de follow-up personalizado para o decisor técnico e financeiro do Grupo Meridian","Acionar gerente de contas sênior para contato direto por telefone hoje","Preparar resumo executivo de 1 página com ROI e comparativo competitivo","Propor reunião executiva curta (30min) com presença da diretoria comercial","Registrar todas as interações no Salesforce e definir próximo gatilho de follow-up"],
+    confPct:"94",
+    resp:"Proposta de R$280k identificada como risco alto de perda por inatividade. 23 casos similares analisados: 78% convertidos com follow-up ativo em até 7 dias. Gerente sênior e diretor comercial acionados. Plano de reengajamento estruturado enviado."
+  },
+  {
+    text:"O cliente João Pereira recebeu um notebook com a tela trincada. Ele solicitou troca mas não sabe qual o procedimento e prazo.",
+    nivel:"N1",nclass:"n1",prio:"Baixa",prioClass:"low",cat:"SAC / Troca de Produto",conf:"99",
+    agent:"Agente SAC — Customer Service",role:"Suporte ao cliente — Pós-venda e trocas",avatar:"SAC",
+    d1:"Solicitação de troca por produto danificado na entrega. Cliente aguarda orientação sobre procedimento.",
+    d2:"Classificado N1 — Baixo. Processo padrão de troca por dano no transporte. Resolução automatizada.",
+    d3:"Roteando para Agente SAC. Troca garantida por política de 7 dias para dano na entrega.",
+    d4:"Tipo de chamado mais frequente: 1.247 ocorrências este mês. Taxa de resolução automatizada: 94%.",
+    d5:"Procedimento de troca estruturado e link de coleta gerado automaticamente via sistema de logística.",
+    stepsMeta:[
+      {time:"0,3s", agent:"AORI", sys:"Canal SAC → API Gateway"},
+      {time:"0,7s", agent:"AORI + Módulo 01", sys:"LLM · Política de trocas"},
+      {time:"0,5s", agent:"Módulo 01", sys:"Classificador SAC"},
+      {time:"0,5s", agent:"Módulo 01", sys:"AI Gateway → Agente SAC"},
+      {time:"0,8s", agent:"Agente SAC", sys:"Zendesk · Política de trocas · Logística"},
+      {time:"0,7s", agent:"Agente SAC", sys:"Gerador de protocolo · Sistema de coleta"},
+      {time:"0,3s", agent:"AORI", sys:"DHuO → Zendesk · E-mail cliente"}
+    ],
+    similar:[
+      {id:"TKT-8821",txt:"Notebook com tela trincada — dano entrega",res:"Auto-resolvido em 4min"},
+      {id:"TKT-8790",txt:"Produto danificado no transporte — troca",res:"Auto-resolvido em 3min"},
+      {id:"TKT-8644",txt:"Cliente solicita troca — produto avariado",res:"Auto-resolvido em 5min"}
+    ],
+    steps:["Confirmar ao cliente que a troca é garantida por dano na entrega (política de 7 dias corridos)","Solicitar foto do produto danificado por e-mail ou WhatsApp para registro no sistema","Gerar código de coleta reversa — transportadora busca em até 2 dias úteis","Após confirmação de recebimento no CD, novo produto enviado em até 3 dias úteis","Enviar protocolo de troca por e-mail com número de rastreamento do novo envio"],
+    confPct:"99",
+    resp:"Troca aprovada automaticamente — dano na entrega coberto por política padrão. Protocolo gerado, coleta reversa agendada e novo produto separado. Comunicação enviada ao cliente. Resolução esperada em menos de 5 minutos sem intervenção humana."
+  },
+  {
+    text:"A empresa Tecnodata quer adicionar o módulo de gestão de estoque ao contrato atual. Precisamos de proposta, prazo de implantação e impacto no contrato vigente.",
+    nivel:"N2",nclass:"n2",prio:"Alta",prioClass:"high",cat:"Serviços / Expansão de Contrato",conf:"93",
+    agent:"Agente VND — Expansão de Serviços",role:"Especialista em upsell e gestão de contratos",avatar:"EXP",
+    d1:"Oportunidade de expansão de contrato identificada. Cliente solicita adição de módulo com impacto contratual.",
+    d2:"Classificado N2 — Oportunidade. Expansão requer análise de compatibilidade e proposta comercial.",
+    d3:"Roteando para Agente de Expansão de Serviços. Consultor de conta notificado para engajamento.",
+    d4:"31 expansões de contrato similares analisadas. Tempo médio de formalização: 8 dias úteis.",
+    d5:"Proposta de expansão gerada com base nos parâmetros do contrato vigente da Tecnodata.",
+    stepsMeta:[
+      {time:"0,4s", agent:"AORI", sys:"Canal CRM → API Gateway"},
+      {time:"0,9s", agent:"AORI + Módulo 01", sys:"LLM · Base de contratos"},
+      {time:"0,7s", agent:"Módulo 01", sys:"Classificador comercial"},
+      {time:"0,6s", agent:"Módulo 03", sys:"AI Gateway → Agente Expansão"},
+      {time:"1,0s", agent:"Agente EXP", sys:"Salesforce · Contrato Tecnodata · Catálogo"},
+      {time:"0,9s", agent:"Agente EXP + Módulo 02", sys:"Template de expansão · Histórico"},
+      {time:"0,4s", agent:"AORI", sys:"DHuO → Salesforce · E-mail consultor"}
+    ],
+    similar:[
+      {id:"CNT-0892",txt:"Tecnodata — adição módulo fiscal Q3",res:"Formalizado em 6 dias"},
+      {id:"CNT-0754",txt:"Expansão contrato — novo módulo integrado",res:"Formalizado em 9 dias"},
+      {id:"CNT-0611",txt:"Adição de serviço — cliente enterprise",res:"Formalizado em 7 dias"}
+    ],
+    steps:["Verificar compatibilidade do módulo de estoque com a versão contratada pela Tecnodata","Gerar proposta comercial com pricing de expansão e condições do contrato vigente","Calcular cronograma de implantação: estimativa de 15 dias úteis para módulo de estoque","Preparar aditivo contratual com novo escopo, SLA e valor mensal atualizado","Agendar reunião com consultor de conta e decisor da Tecnodata para apresentação e assinatura"],
+    confPct:"93",
+    resp:"Oportunidade de expansão mapeada para Tecnodata. 31 casos similares com tempo médio de formalização de 8 dias. Proposta gerada automaticamente, compatibilidade verificada e consultor de conta notificado. Aditivo contratual em preparação."
+  },
+  {
+    text:"Solicitamos a portabilidade do número 11 9 4400-2200 da TIM para a Vivo. É um número corporativo do diretor comercial e precisa de urgência.",
+    nivel:"N2",nclass:"n2",prio:"Alta",prioClass:"high",cat:"Telecom / Portabilidade",conf:"96",
+    agent:"Agente CSC — Telecomunicações",role:"Especialista em portabilidade e gestão de linhas",avatar:"TEL",
+    d1:"Solicitação de portabilidade de número corporativo VIP. Urgência declarada pelo solicitante.",
+    d2:"Classificado N2 — Alto. Número de diretor requer tratamento prioritário e acompanhamento dedicado.",
+    d3:"Roteando para Agente de Telecomunicações. Portabilidade corporativa com prazo regulatório de 3 dias úteis.",
+    d4:"89 portabilidades processadas no último trimestre. Taxa de sucesso: 97%. Prazo médio: 2,8 dias úteis.",
+    d5:"Fluxo de portabilidade iniciado. Documentação necessária identificada e checklist enviado.",
+    stepsMeta:[
+      {time:"0,4s", agent:"AORI", sys:"Canal Portal → API Gateway"},
+      {time:"0,8s", agent:"AORI + Módulo 01", sys:"LLM · Regulamento ANATEL"},
+      {time:"0,6s", agent:"Módulo 01", sys:"Classificador Telecom"},
+      {time:"0,6s", agent:"Módulo 03", sys:"AI Gateway → Agente TEL"},
+      {time:"0,9s", agent:"Agente TEL", sys:"Sistema de portabilidade · ANATEL API"},
+      {time:"0,8s", agent:"Agente TEL", sys:"Checklist portabilidade · Base regulatória"},
+      {time:"0,4s", agent:"AORI", sys:"DHuO → Sistema Telecom · E-mail · Teams"}
+    ],
+    similar:[
+      {id:"TKT-5621",txt:"Portabilidade corporativa TIM→Vivo — VIP",res:"Concluída em 2 dias úteis"},
+      {id:"TKT-5489",txt:"Número diretor — portabilidade urgente",res:"Concluída em 3 dias úteis"},
+      {id:"TKT-5302",txt:"Linha corporativa — migração de operadora",res:"Concluída em 2 dias úteis"}
+    ],
+    steps:["Confirmar titularidade do número: solicitar CNPJ da empresa e documento do responsável","Verificar se o número não está em carência (menos de 30 dias de ativação na operadora atual)","Iniciar solicitação formal no sistema de portabilidade e obter código CRIP junto à TIM","Acompanhar aprovação da operadora doadora — prazo regulatório ANATEL: 3 dias úteis","Confirmar ativação na Vivo e testar chamadas de entrada e saída com o diretor"],
+    confPct:"96",
+    resp:"Portabilidade do número VIP iniciada. 89 casos similares com 97% de sucesso e prazo médio de 2,8 dias úteis. Documentação solicitada, código CRIP em processamento. Acompanhamento dedicado ativado pelo Agente de Telecomunicações."
+  },
+  {
+    text:"Colaborador Ana Costa não consegue registrar férias no sistema de RH. O campo de datas aparece bloqueado e o sistema não mostra o saldo disponível.",
+    nivel:"N1",nclass:"n1",prio:"Baixa",prioClass:"low",cat:"RH / Sistema de Pessoas",conf:"98",
+    agent:"Agente RH — People & Self-Service",role:"Suporte de primeiro nível — Sistemas de RH",avatar:"RH",
+    d1:"Colaboradora sem acesso ao módulo de férias. Campo bloqueado indica vínculo não ativo no sistema.",
+    d2:"Classificado N1 — Baixo. Causa provável: registro de admissão pendente de sincronização no sistema.",
+    d3:"Roteando para Agente RH. Resolução automática via atualização de cadastro no TOTVS.",
+    d4:"Tipo frequente: 218 ocorrências no mês. 91% resolvidas automaticamente via sincronização de cadastro.",
+    d5:"Script de sincronização identificado. Perfil da colaboradora será atualizado sem intervenção manual.",
+    stepsMeta:[
+      {time:"0,3s", agent:"AORI", sys:"Canal Portal RH → API Gateway"},
+      {time:"0,7s", agent:"AORI + Módulo 01", sys:"LLM · Base de incidentes RH"},
+      {time:"0,5s", agent:"Módulo 01", sys:"Classificador RH"},
+      {time:"0,5s", agent:"Módulo 01", sys:"AI Gateway → Agente RH"},
+      {time:"0,8s", agent:"Agente RH", sys:"TOTVS · SuccessFactors · Base RH"},
+      {time:"0,7s", agent:"Agente RH", sys:"Script de sincronização · Runbook RH"},
+      {time:"0,3s", agent:"AORI", sys:"DHuO → TOTVS · E-mail colaboradora"}
+    ],
+    similar:[
+      {id:"TKT-7210",txt:"Férias bloqueadas — novo colaborador",res:"Auto-resolvido em 6min"},
+      {id:"TKT-7198",txt:"Saldo férias não exibido — sincronização",res:"Auto-resolvido em 4min"},
+      {id:"TKT-7054",txt:"Campo data férias bloqueado no portal RH",res:"Auto-resolvido em 5min"}
+    ],
+    steps:["Verificar status do cadastro de Ana Costa no TOTVS RH — confirmar se admissão foi processada","Executar sincronização manual do perfil: Módulo RH → Administração → Sincronizar Colaborador","Aguardar 2 minutos e solicitar que a colaboradora recarregue a página do portal","Confirmar que o saldo de férias está exibido corretamente (verificar regra de 12 meses de trabalho)","Enviar confirmação por e-mail e orientar sobre prazo mínimo de aviso para registro de férias"],
+    confPct:"98",
+    resp:"Chamado de RH com resolução automatizada disponível. 218 ocorrências similares neste mês: 91% resolvidas via sincronização de cadastro. Script executado, perfil da Ana Costa atualizado no TOTVS. Resolução esperada em menos de 5 minutos."
+  }
+];
+
+let busy=false,count=0;
+
+function T(){const d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')}
+
+function addMsg(role,html){
+  const msgs=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.className='msg '+role;
+  const s=role==='aori'?'<div class="msg-sender">AORI</div>':'';
+  d.innerHTML=`${s}<div class="msg-bubble">${html}</div><div class="msg-meta">${T()}</div>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submitTicket()}}
+
+function useScenario(i){if(!busy){document.getElementById('ticket-input').value=SC[i].text;submitTicket()}}
+
+async function submitTicket(){
+  if(busy)return;
+  const inp=document.getElementById('ticket-input');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  busy=true;
+  document.getElementById('send-btn').disabled=true;
+  inp.value='';count++;
+  document.getElementById('ticket-count').textContent=count+(count===1?' chamado':' chamados');
+  addMsg('user',txt);
+  const sc=findSC(txt);
+  await runOrch(sc);
+  busy=false;
+  document.getElementById('send-btn').disabled=false;
+}
+
+function findSC(t){
+  const l=t.toLowerCase();
+  if(l.includes('produç')||l.includes('linha')||l.includes('mes')||l.includes('clp')||l.includes('industrial'))return SC[0];
+  if(l.includes('proposta')||l.includes('meridian')||l.includes('pipeline')||l.includes('aprovação'))return SC[1];
+  if(l.includes('troca')||l.includes('danificad')||l.includes('danificada')||l.includes('entrega'))return SC[2];
+  if(l.includes('módulo')||l.includes('estoque')||l.includes('contrato')||l.includes('tecnodata')||l.includes('adição'))return SC[3];
+  if(l.includes('portabilidade')||l.includes('tim')||l.includes('vivo')||l.includes('operadora')||l.includes('número'))return SC[4];
+  if(l.includes('férias')||l.includes('rh')||l.includes('colaborador')||l.includes('totvs')||l.includes('bloqueado'))return SC[5];
+  return SC[Math.floor(Math.random()*SC.length)];
+}
+
+async function runOrch(sc){
+  document.getElementById('idle-state').style.display='none';
+  const pip=document.getElementById('pipeline');
+  pip.style.display='flex';
+  document.getElementById('analysis-panel').classList.remove('visible');
+  document.getElementById('orch-sub').textContent='Processando demanda...';
+  document.querySelectorAll('.step').forEach(s=>s.className='step');
+
+  const baseTxts=[
+    "Demanda recebida via canal de entrada. Processando texto em linguagem natural.",
+    sc.d1, sc.d2, sc.d3, sc.d4, sc.d5,
+    "Chamado #TKT-"+(3200+count)+" classificado. Resposta entregue ao usuário."
+  ];
+  const details=baseTxts.map((txt,i)=>{
+    const m=sc.stepsMeta&&sc.stepsMeta[i];
+    if(!m)return txt;
+    return txt+'<span class="step-meta"><span class="step-time">⏱ '+m.time+'</span><span class="step-agent">'+m.agent+'</span><span class="step-sys">'+m.sys+'</span></span>';
+  });
+  const times=[550,850,750,700,950,850,550];
+  const steps=document.querySelectorAll('.step');
+
+  for(let i=0;i<steps.length;i++){
+    if(i>0)steps[i-1].className='step done';
+    steps[i].className='step active';
+    document.getElementById('d'+i).innerHTML=details[i];
+    await sleep(times[i]);
+  }
+  steps[steps.length-1].className='step done';
+
+  await sleep(280);
+  showResults(sc);
+  document.getElementById('orch-sub').textContent='Concluído — TKT-'+(3200+count);
+
+  await sleep(350);
+  const html=`<div class="result-card">
+    <div class="result-row"><span class="result-key">Chamado</span><span class="result-val">#TKT-${3200+count}</span></div>
+    <div class="result-row"><span class="result-key">Nível</span><span class="result-val ${sc.nclass}">${sc.nivel} — ${sc.cat}</span></div>
+    <div class="result-row"><span class="result-key">Prioridade</span><span class="result-val ${sc.prioClass}">${sc.prio}</span></div>
+    <div class="result-row"><span class="result-key">Agente</span><span class="result-val">${sc.agent}</span></div>
+    <div class="resolution-box"><strong>Diagnóstico e ação recomendada</strong>${sc.resp}</div>
+  </div>`;
+  addMsg('aori',html);
+}
+
+function showResults(sc){
+  document.getElementById('r-nivel').textContent=sc.nivel;
+  document.getElementById('r-nivel').className='class-val '+sc.nclass;
+  document.getElementById('r-prio').textContent=sc.prio;
+  document.getElementById('r-prio').className='class-val '+sc.prioClass;
+  document.getElementById('r-cat').textContent=sc.cat;
+  document.getElementById('r-conf').textContent=sc.conf+'%';
+  document.getElementById('r-avatar').textContent=sc.avatar;
+  document.getElementById('r-agent-name').textContent=sc.agent;
+  document.getElementById('r-agent-role').textContent=sc.role;
+
+  document.getElementById('similar-list').innerHTML=sc.similar.map(s=>
+    `<div class="sim-item"><span class="sim-id">${s.id}</span><span class="sim-txt">${s.txt}</span><span class="sim-resolved">${s.res}</span></div>`
+  ).join('');
+
+  document.getElementById('res-steps').innerHTML=sc.steps.map((s,i)=>
+    `<div class="res-step"><div class="res-step-num">${i+1}</div><div class="res-step-txt">${s}</div></div>`
+  ).join('');
+
+  document.getElementById('conf-pct').textContent=sc.confPct+'%';
+  document.getElementById('conf-fill').style.width=sc.confPct+'%';
+  document.getElementById('analysis-panel').classList.add('visible');
+
+  // Quick reply suggestions
+  const qr=document.getElementById('quick-replies');
+  const chips=[
+    'Confirmar resolução',
+    'Preciso de mais detalhes',
+    'Escalar para especialista',
+    'Ver chamados similares',
+    'Isso resolveu meu problema'
+  ];
+  qr.innerHTML='<span class="quick-replies-label">Respostas rápidas baseadas em chamados similares</span>'+chips.map(c=>`<button class="qr-chip" onclick="sendQuickReply('${c}')">${c}</button>`).join('');
+  qr.style.display='flex';
+}
+
+function resetDemo(){
+  document.getElementById('messages').innerHTML=`<div class="msg aori"><div class="msg-sender">AORI</div><div class="msg-bubble">Olá. Sou o orquestrador AORI para Suporte Técnico. Descreva seu chamado ou selecione um cenário acima para ver a orquestração agêntica em tempo real.</div><div class="msg-meta">${T()}</div></div>`;
+  count=0;
+  document.getElementById('ticket-count').textContent='0 chamados';
+  document.getElementById('idle-state').style.display='flex';
+  document.getElementById('pipeline').style.display='none';
+  document.getElementById('analysis-panel').classList.remove('visible');
+  document.getElementById('orch-sub').textContent='Aguardando demanda';
+  document.querySelectorAll('.step').forEach(s=>s.className='step');
+  document.getElementById('conf-fill').style.width='0';
+  document.getElementById('quick-replies').style.display='none';
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function sendQuickReply(txt){
+  if(!busy){
+    document.getElementById('quick-replies').style.display='none';
+    document.getElementById('ticket-input').value=txt;
+    submitTicket();
+  }
+}
+</script>
+</body>
+</html>

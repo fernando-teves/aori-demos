@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AORI — Guia de Condução de Demo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050D1E;--bg2:#0A1628;--bg3:#0F1F38;
+  --cyan:#00C5FF;--white:#F0F6FF;--gray:#8AA3C8;--gray2:#4A6585;
+  --border:rgba(0,197,255,0.12);--border2:rgba(0,197,255,0.25);
+  --green:#00D97E;--amber:#FFB020;--red:#FF4D4F;--purple:#A78BFA;
+  --u:#00C5FF;--i:#FFB020;--t:#A78BFA;
+  --sidebar:240px;
+}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── TOP BAR ── */
+.topbar{height:50px;background:rgba(5,13,30,0.98);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;z-index:10;}
+.tb-left{display:flex;align-items:center;gap:12px}
+.logo{font-size:18px;font-weight:800;letter-spacing:.14em;color:var(--cyan)}
+.badge{font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:rgba(0,197,255,.1);border:1px solid var(--border2);color:var(--cyan);padding:3px 10px;border-radius:20px;}
+.doc-badge{font-size:10px;color:var(--gray);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:3px 10px;border-radius:20px;}
+.tb-right{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--gray2)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+.sb-section{padding:8px 0}
+.sb-section-hdr{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray2);padding:8px 16px 4px;}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 16px;cursor:pointer;transition:all .15s;font-size:12px;color:var(--gray);border-left:2px solid transparent;}
+.sb-item:hover{background:rgba(0,197,255,.05);color:var(--white)}
+.sb-item.active{color:var(--white);border-left-color:var(--cyan);background:rgba(0,197,255,.07)}
+.sb-item.active.u{border-left-color:var(--u);background:rgba(0,197,255,.07)}
+.sb-item.active.i{border-left-color:var(--i);background:rgba(255,176,32,.07)}
+.sb-item.active.t{border-left-color:var(--t);background:rgba(167,139,250,.07)}
+.sb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sb-dot.u{background:var(--u)}.sb-dot.i{background:var(--i)}.sb-dot.t{background:var(--t)}.sb-dot.faq{background:var(--green)}
+.sb-vert-hdr{display:flex;align-items:center;gap:8px;padding:10px 16px 4px;margin-top:4px;}
+.sb-vert-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+.sb-vert-label.u{color:var(--u)}.sb-vert-label.i{color:var(--i)}.sb-vert-label.t{color:var(--t)}
+.sb-divider{height:1px;background:var(--border);margin:6px 16px}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:32px 40px;max-width:860px;}
+.content::-webkit-scrollbar{width:4px}.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+.page{display:none}.page.active{display:block}
+
+/* ── TYPOGRAPHY ── */
+h1{font-size:24px;font-weight:800;color:var(--white);margin-bottom:6px;line-height:1.2}
+h2{font-size:18px;font-weight:700;color:var(--white);margin:28px 0 12px;}
+h3{font-size:14px;font-weight:700;color:var(--cyan);margin:20px 0 8px;letter-spacing:.04em;text-transform:uppercase;}
+p{color:var(--gray);line-height:1.7;margin-bottom:12px}
+strong{color:var(--white)}
+
+/* ── COMPONENTS ── */
+.page-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.page-subtitle{font-size:13px;color:var(--gray2);margin-top:4px}
+.vert-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:4px;margin-bottom:12px;}
+.vert-tag.u{background:rgba(0,197,255,.12);color:var(--u);border:1px solid rgba(0,197,255,.2)}
+.vert-tag.i{background:rgba(255,176,32,.12);color:var(--i);border:1px solid rgba(255,176,32,.2)}
+.vert-tag.t{background:rgba(167,139,250,.12);color:var(--t);border:1px solid rgba(167,139,250,.2)}
+.vert-tag.faq{background:rgba(0,217,126,.12);color:var(--green);border:1px solid rgba(0,217,126,.2)}
+
+.card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:18px;margin-bottom:14px;}
+.card.highlight{border-color:rgba(0,197,255,.2);background:rgba(0,197,255,.04)}
+.card.warn{border-color:rgba(255,176,32,.2);background:rgba(255,176,32,.04)}
+.card.ok{border-color:rgba(0,217,126,.2);background:rgba(0,217,126,.04)}
+.card.red{border-color:rgba(255,77,79,.2);background:rgba(255,77,79,.04)}
+
+.card-title{font-size:12px;font-weight:700;color:var(--white);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.card-icon{font-size:16px}
+
+.turn-block{background:rgba(0,0,0,.2);border-radius:8px;padding:14px;margin-bottom:10px;border-left:3px solid var(--border2)}
+.turn-block.u{border-left-color:var(--u)}.turn-block.i{border-left-color:var(--i)}.turn-block.t{border-left-color:var(--t)}
+.turn-num{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.turn-agent{font-size:10px;color:var(--amber);font-style:italic}
+.turn-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:6px}
+.turn-desc{font-size:12px;color:var(--gray);line-height:1.6;margin-bottom:8px}
+.turn-highlight{font-size:12px;color:var(--cyan);font-style:italic;padding-left:10px;border-left:2px solid var(--border2)}
+.turn-highlight.i{color:var(--i);border-left-color:rgba(255,176,32,.3)}
+.turn-highlight.t{color:var(--t);border-left-color:rgba(167,139,250,.3)}
+
+.faq-item{background:rgba(0,0,0,.2);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer;border:1px solid rgba(255,255,255,.04);transition:border .2s}
+.faq-item:hover{border-color:var(--border)}
+.faq-q{font-size:13px;font-weight:600;color:var(--white);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-arrow{font-size:12px;color:var(--gray2);transition:transform .2s;flex-shrink:0}
+.faq-a{font-size:12px;color:var(--gray);line-height:1.6;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);display:none}
+.faq-item.open .faq-a{display:block}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+
+.agent-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.15);color:var(--amber);font-size:11px;padding:2px 8px;border-radius:12px;margin:2px}
+.tip-box{background:rgba(0,197,255,.04);border:1px solid rgba(0,197,255,.15);border-radius:8px;padding:12px 16px;margin-bottom:12px}
+.tip-box .tip-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--cyan);text-transform:uppercase;margin-bottom:6px}
+.tip-box p{margin-bottom:0;font-size:12px}
+.warn-box{background:rgba(255,176,32,.04);border:1px solid rgba(255,176,32,.15);border-radius:8px;padding:12px 16px;margin-bottom:12px}
+.warn-box .tip-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--amber);text-transform:uppercase;margin-bottom:6px}
+.warn-box p{margin-bottom:0;font-size:12px}
+
+ol,ul{padding-left:20px;margin-bottom:12px}
+li{color:var(--gray);line-height:1.7;font-size:13px;margin-bottom:3px}
+li strong{color:var(--white)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+
+.scenario-nav{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.sc-pill{font-size:11px;padding:5px 14px;border-radius:20px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--gray);transition:all .15s;font-family:inherit}
+.sc-pill:hover{border-color:var(--border2);color:var(--white)}
+.sc-pill.active{background:rgba(0,197,255,.1);border-color:var(--border2);color:var(--cyan)}
+.sc-pill.active.i{background:rgba(255,176,32,.1);border-color:rgba(255,176,32,.3);color:var(--i)}
+.sc-pill.active.t{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--t)}
+</style>
+<style>#aori-nav~* .topbar,body>.topbar{margin-top:36px!important}.topbar{top:36px!important}</style>
+</head>
+<body>
+<div id="aori-nav" style="position:fixed;top:0;left:0;right:0;height:36px;background:rgba(5,13,30,0.97);border-bottom:1px solid rgba(0,197,255,0.15);display:flex;align-items:center;padding:0 16px;gap:16px;z-index:9999;font-family:'Segoe UI',system-ui,sans-serif;">
+  <a href="index.html" style="display:flex;align-items:center;gap:7px;text-decoration:none;color:#8AA3C8;font-size:11px;letter-spacing:.04em;transition:color .15s;" onmouseover="this.style.color='#00C5FF'" onmouseout="this.style.color='#8AA3C8'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Voltar ao portal
+  </a>
+  <div style="height:14px;width:1px;background:rgba(255,255,255,0.08)"></div>
+  <span style="font-size:11px;font-weight:700;letter-spacing:.14em;color:#00C5FF;">AORI</span>
+  <span id="nav-page-title" style="font-size:10px;color:#4A6585;letter-spacing:.06em;text-transform:uppercase;"></span>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('nav-page-title');
+  if(el){var t=document.title.replace('AORI — ','').replace('AORI - ','');el.textContent=t;}
+})();
+</script>
+
+
+<div class="topbar">
+  <div class="tb-left">
+    <span class="logo">AORI</span>
+    <span class="badge">Orquestrador Agêntico</span>
+    <span class="doc-badge">Guia de Condução · Uso Interno</span>
+  </div>
+  <div class="tb-right">Eng Brasil · Versão 1.0 · 2025</div>
+</div>
+
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar">
+  <div class="sb-section">
+    <div class="sb-section-hdr">Visão Geral</div>
+    <div class="sb-item active" onclick="show('intro')"><div class="sb-dot" style="background:var(--cyan)"></div>Como usar este guia</div>
+    <div class="sb-item" onclick="show('contexto')"><div class="sb-dot" style="background:var(--cyan)"></div>Contexto e posicionamento</div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-vert-hdr"><span class="sb-vert-label u">Utilities</span></div>
+    <div class="sb-item u" onclick="show('u1')"><div class="sb-dot u"></div>Religação de serviço</div>
+    <div class="sb-item u" onclick="show('u2')"><div class="sb-dot u"></div>Falha no fornecimento</div>
+    <div class="sb-item u" onclick="show('u3')"><div class="sb-dot u"></div>Mudança de titularidade</div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-vert-hdr"><span class="sb-vert-label i">Indústria</span></div>
+    <div class="sb-item i" onclick="show('i1')"><div class="sb-dot i"></div>Problema na operação</div>
+    <div class="sb-item i" onclick="show('i2')"><div class="sb-dot i"></div>Falha de segurança</div>
+    <div class="sb-item i" onclick="show('i3')"><div class="sb-dot i"></div>Conectividade industrial</div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-vert-hdr"><span class="sb-vert-label t">Telecom</span></div>
+    <div class="sb-item t" onclick="show('t1')"><div class="sb-dot t"></div>Portabilidade corporativa</div>
+    <div class="sb-item t" onclick="show('t2')"><div class="sb-dot t"></div>Contratação de serviços</div>
+    <div class="sb-item t" onclick="show('t3')"><div class="sb-dot t"></div>Problema de sinal</div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-section-hdr">Apoio ao Consultor</div>
+    <div class="sb-item" onclick="show('faq')"><div class="sb-dot faq"></div>FAQ Técnico</div>
+    <div class="sb-item" onclick="show('objecoes')"><div class="sb-dot faq"></div>Objeções e respostas</div>
+  </div>
+</nav>
+
+<!-- ── CONTENT ── -->
+<div class="content">
+
+<!-- INTRO -->
+<div class="page active" id="page-intro">
+  <div class="page-header">
+    <h1>Guia de Condução da Demo AORI</h1>
+    <div class="page-subtitle">Roteiro interno para consultores da Eng Brasil — não compartilhar com clientes</div>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Como usar este guia</div>
+    <p>Abra este guia em uma segunda tela durante a demo. Para cada cenário que você simular, navegue até a seção correspondente no menu lateral. O guia descreve o que falar, o que destacar em cada uma das 8 interações, e como responder às perguntas mais comuns.</p>
+  </div>
+  <h2>O que este guia cobre</h2>
+  <div class="grid2">
+    <div class="card"><div class="card-title"><span class="card-icon">🎯</span>Roteiro por cenário</div><p style="font-size:12px;margin:0">Gancho de abertura, o que destacar em cada interação, e como conduzir até o encerramento.</p></div>
+    <div class="card"><div class="card-title"><span class="card-icon">🤖</span>Múltiplos agentes</div><p style="font-size:12px;margin:0">Quando cada agente aparece e qual narrativa usar para explicar o acionamento em tempo real.</p></div>
+    <div class="card"><div class="card-title"><span class="card-icon">❓</span>FAQ Técnico</div><p style="font-size:12px;margin:0">Respostas preparadas para integração, segurança, LGPD, prazo, custo e diferença de RPA.</p></div>
+    <div class="card"><div class="card-title"><span class="card-icon">🛡️</span>Objeções</div><p style="font-size:12px;margin:0">Como lidar com as objeções mais comuns sem sair do fluxo da demo.</p></div>
+  </div>
+  <h2>Estrutura das demos</h2>
+  <p>Cada demo vertical (Utilities, Indústria, Telecom) tem <strong>3 cenários com 8 interações</strong> cada. A progressão segue sempre a mesma lógica:</p>
+  <ol>
+    <li><strong>Interações 1–2:</strong> AORI recebe a demanda, identifica o padrão e aciona o Agente primário</li>
+    <li><strong>Interações 3–4:</strong> Agente primário aprofunda o diagnóstico e propõe ações</li>
+    <li><strong>Interações 5–6:</strong> Segundo agente especializado é acionado visivelmente no painel</li>
+    <li><strong>Interações 7–8:</strong> Confirmação, documentação e encerramento com rastreabilidade completa</li>
+  </ol>
+  <div class="warn-box">
+    <div class="tip-label">⚠️ Ponto de atenção</div>
+    <p>Os chips de resposta rápida (botões azuis abaixo do chat) são sugestões contextuais — use-os para acelerar a demo. O cliente também pode digitar livremente qualquer pergunta.</p>
+  </div>
+</div>
+
+<!-- CONTEXTO -->
+<div class="page" id="page-contexto">
+  <div class="page-header">
+    <h1>Contexto e posicionamento</h1>
+    <div class="page-subtitle">O que é o AORI e como posicioná-lo antes de abrir a demo</div>
+  </div>
+  <h2>O que dizer antes de abrir a demo</h2>
+  <div class="card highlight">
+    <div class="card-title"><span class="card-icon">💬</span>Abertura recomendada (adapte ao setor)</div>
+    <p style="font-size:13px;color:var(--white);font-style:italic;margin-bottom:8px">"O AORI não é mais uma ferramenta para gerenciar demandas. Ele é um orquestrador — ele entende o que o cliente precisa, identifica a causa raiz com base em histórico, e aciona automaticamente os agentes certos para resolver. Sem triagem manual, sem fila. Vou mostrar isso ao vivo agora."</p>
+  </div>
+  <h2>Os três módulos que você vai ver funcionando</h2>
+  <div class="grid2">
+    <div class="card"><div class="card-title">Módulo 01 · Inteligência de Demandas</div><p style="font-size:12px;margin:0">Classifica e prioriza em tempo real com base em padrões históricos e regras de negócio do cliente.</p></div>
+    <div class="card"><div class="card-title">Módulo 02 · Padrões e Causas</div><p style="font-size:12px;margin:0">Identifica causa raiz cruzando histórico de chamados, runbooks e dados operacionais.</p></div>
+    <div class="card"><div class="card-title">Módulo 03 · Acionamento Inteligente</div><p style="font-size:12px;margin:0">Aciona agentes especializados e sistemas externos automaticamente, sem intervenção humana.</p></div>
+  </div>
+  <h2>Diferenciais para mencionar durante a demo</h2>
+  <ul>
+    <li><strong>Múltiplos agentes visíveis:</strong> O cliente vê no painel lateral cada agente sendo acionado em tempo real — isso é a orquestração acontecendo ao vivo</li>
+    <li><strong>Rastro completo:</strong> Cada resposta do AORI mostra tempo de processamento, agente ativo e sistemas consultados</li>
+    <li><strong>Chamados similares:</strong> O painel mostra casos anteriores resolvidos — evidência de que o AORI aprende com o histórico</li>
+    <li><strong>Retroalimentação:</strong> Ao final de cada chamado, o AORI documenta e alimenta o Módulo 02 para resoluções ainda mais rápidas no futuro</li>
+  </ul>
+</div>
+
+<!-- ─────────────── UTILITIES ─────────────── -->
+<!-- U1: Religação -->
+<div class="page" id="page-u1">
+  <div class="page-header">
+    <div class="vert-tag u">Utilities</div>
+    <h1>Religação de serviço</h1>
+    <div class="page-subtitle">Cliente pagou conta em atraso e a energia não foi reativada no prazo</div>
+  </div>
+  <div class="card highlight">
+    <div class="card-title"><span class="card-icon">🎯</span>Gancho de abertura para o cliente</div>
+    <p style="font-size:13px;color:var(--white);font-style:italic">"Esse é um dos cenários mais comuns em distribuidoras — e também um dos mais sensíveis. O cliente pagou, tem prova, mas o serviço não voltou. Veja como o AORI trata isso em segundos, sem uma única transferência de setor."</p>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">COM · Comercial</span><span class="agent-pill">TEC · Técnico</span><span class="agent-pill">CAM · Campo</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block u">
+    <div class="turn-num">Interação 1 · <span class="turn-agent">AORI + Módulo 01</span></div>
+    <div class="turn-title">Identificação imediata do pagamento</div>
+    <div class="turn-desc">O AORI localiza o pagamento, confirma o prazo regulatório e já avalia o status da ordem de serviço. <strong>Destaque:</strong> o Módulo 01 cruzou o CRM com o sistema financeiro em menos de 1 segundo.</div>
+    <div class="turn-highlight">"Note que ele já tem o valor, o horário e a forma de pagamento — sem precisar que o cliente repita nada."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interação 2 · <span class="turn-agent">Agente Comercial acionado</span></div>
+    <div class="turn-title">Reclassificação de prioridade + acionamento comercial</div>
+    <div class="turn-desc">O AORI identifica que a ordem está na fila errada e reclassifica para hoje. O Agente Comercial aparece no painel lateral. <strong>Destaque:</strong> nenhum humano precisou fazer essa triagem.</div>
+    <div class="turn-highlight">"Veja o Agente Comercial sendo acionado no painel — ele vai validar as condições e liberar a ordem de campo."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interação 3 · <span class="turn-agent">Agente Técnico acionado</span></div>
+    <div class="turn-title">Oferta de horários disponíveis</div>
+    <div class="turn-desc">Após validação comercial, o Agente Técnico entra com a agenda de campo disponível. O cliente escolhe o período. <strong>Destaque:</strong> dois agentes trabalhando em paralelo, resultado instantâneo.</div>
+    <div class="turn-highlight">"O Técnico já tem a agenda de campo em tempo real — sem ligar para o setor, sem esperar."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interações 4–6 · <span class="turn-agent">Técnico + Campo</span></div>
+    <div class="turn-title">Detalhes do agendamento e acompanhamento</div>
+    <div class="turn-desc">O AORI responde sobre presença em casa, acesso ao medidor, e como acompanhar em tempo real pelo app. O Agente de Campo é acionado.</div>
+    <div class="turn-highlight">"O Agente de Campo já está preparado — quando o técnico sair, ele envia localização e ETA automaticamente."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interações 7–8 · <span class="turn-agent">AORI · Encerramento</span></div>
+    <div class="turn-title">SLA de campo e encerramento com protocolo</div>
+    <div class="turn-desc">AORI explica o que acontece em caso de atraso e encerra com protocolo registrado no CRM. <strong>Destaque:</strong> rastreabilidade completa — tudo documentado automaticamente.</div>
+    <div class="turn-highlight">"Nenhuma anotação manual. O chamado já está no CRM com todos os dados registrados."</div>
+  </div>
+  <div class="warn-box">
+    <div class="tip-label">Se o cliente perguntar sobre integração com o sistema deles</div>
+    <p>Diga que o AORI se integra via API com qualquer CRM, ERP ou sistema de campo. O exemplo usa estrutura genérica de distribuidora — a conexão com o sistema real do cliente é parte do processo de implantação.</p>
+  </div>
+</div>
+
+<!-- U2: Falha -->
+<div class="page" id="page-u2">
+  <div class="page-header">
+    <div class="vert-tag u">Utilities</div>
+    <h1>Falha no fornecimento</h1>
+    <div class="page-subtitle">Cliente sem energia por 5 horas com dependência médica declarada</div>
+  </div>
+  <div class="card red">
+    <div class="card-title"><span class="card-icon">🚨</span>Cenário crítico — maior impacto emocional da demo</div>
+    <p style="font-size:12px;margin:0">Este é o cenário mais poderoso para demonstrar a diferença entre um sistema reativo e um orquestrador proativo. Use-o quando o cliente for de Utilities ou quando quiser demonstrar tratamento de emergências.</p>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">OPS · Operações</span><span class="agent-pill">SUP · Supervisor</span><span class="agent-pill">CAM · Campo Prioritário</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block u">
+    <div class="turn-num">Interação 1 · <span class="turn-agent">AORI + SCADA</span></div>
+    <div class="turn-title">Diagnóstico em tempo real com SCADA</div>
+    <div class="turn-desc">O AORI já tem o incidente mapeado no SCADA — sabe que é falha em transformador, sabe quantas unidades estão afetadas. <strong>Destaque:</strong> o cliente não precisou explicar nada além do contexto pessoal.</div>
+    <div class="turn-highlight">"Ele já estava monitorando. A demanda do cliente confirmou o incidente — o diagnóstico já existia."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interação 2 · <span class="turn-agent">Agente de Operações</span></div>
+    <div class="turn-title">Atualização da previsão + registro de dependência médica</div>
+    <div class="turn-desc">O Agente OPS traz a previsão real (não a genérica). O AORI registra a dependência médica declarada. <strong>Este é o momento-chave:</strong> a partir daqui, o protocolo muda completamente.</div>
+    <div class="turn-highlight">"Sem o AORI, esse registro seria perdido em uma nota de atendimento. Aqui ele ativa um protocolo diferente automaticamente."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interação 3 · <span class="turn-agent">Protocolo Vital + Supervisor</span></div>
+    <div class="turn-title">Ativação do Protocolo de Vulnerabilidade Vital</div>
+    <div class="turn-desc">Este é o momento mais impactante do cenário. O Módulo 03 ativa automaticamente o Protocolo Vital — dois novos agentes entram: Supervisor e Campo Prioritário. <strong>Destaque máximo aqui.</strong></div>
+    <div class="turn-highlight">"Dois agentes acionados simultaneamente em menos de 1 segundo. Isso é orquestração — não triagem manual."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interações 4–6 · <span class="turn-agent">Campo Prioritário</span></div>
+    <div class="turn-title">Gerador móvel, registro de dispositivos críticos</div>
+    <div class="turn-desc">O AORI detalha o que o gerador móvel cobre, registra os dispositivos médicos específicos (CPAP, concentrador) e notifica o técnico com prioridade nos circuitos críticos.</div>
+    <div class="turn-highlight">"O técnico de campo já sabe o que vai encontrar antes de chegar. Isso reduz o tempo de resolução no local."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interações 7–8 · <span class="turn-agent">AORI · Encerramento</span></div>
+    <div class="turn-title">Instruções de preparação e encerramento humanizado</div>
+    <div class="turn-desc">AORI orienta o cliente sobre como preparar o acesso e encerra com ETA confirmado e relatório de compensação prometido automaticamente.</div>
+    <div class="turn-highlight">"'Você está sendo cuidado' — isso não é automação fria. É a voz do orquestrador com contexto humano."</div>
+  </div>
+</div>
+
+<!-- U3: Titularidade -->
+<div class="page" id="page-u3">
+  <div class="page-header">
+    <div class="vert-tag u">Utilities</div>
+    <h1>Mudança de titularidade</h1>
+    <div class="page-subtitle">Transferência por sucessão hereditária — processo documental complexo</div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="card-icon">📋</span>Por que usar este cenário</div>
+    <p style="font-size:12px;margin:0">Demonstra o AORI em processos não-urgentes mas complexos. Mostra que a orquestração não é só para crises — é para qualquer interação que exija múltiplos especialistas e documentação precisa.</p>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">CAD · Cadastral</span><span class="agent-pill">JUR · Jurídico-Documental</span><span class="agent-pill">COM · Comercial</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block u">
+    <div class="turn-num">Interações 1–2 · <span class="turn-agent">AORI + Agente Cadastral</span></div>
+    <div class="turn-title">Identificação do processo correto e lista documental</div>
+    <div class="turn-desc">O AORI identifica que é sucessão e ativa o Agente Cadastral com a lista exata de documentos necessários. Não há pergunta genérica de "o que você precisa?".</div>
+    <div class="turn-highlight">"Ele já sabe qual é o processo legal correto para esse tipo de transferência — sem o cliente precisar pesquisar."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interações 3–4 · <span class="turn-agent">Agente Jurídico-Documental</span></div>
+    <div class="turn-title">Distinção entre formal de partilha e inventário + canais de envio</div>
+    <div class="turn-desc">O Agente JUR explica a diferença entre os dois documentos aceitos e orienta sobre os três canais de envio disponíveis.</div>
+    <div class="turn-highlight">"O Agente Jurídico não é um advogado — é um especialista em processos documentais que o AORI aciona quando necessário."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interações 5–7 · <span class="turn-agent">JUR + Comercial</span></div>
+    <div class="turn-title">Condições do contrato, prazos e energia solar</div>
+    <div class="turn-desc">O contrato mantém as mesmas condições. O Agente Comercial verifica automaticamente se há geração solar cadastrada — informação que o cliente normalmente não saberia que precisava informar.</div>
+    <div class="turn-highlight">"Proativo — o AORI antecipou a questão da energia solar sem o cliente perguntar."</div>
+  </div>
+  <div class="turn-block u">
+    <div class="turn-num">Interação 8 · <span class="turn-agent">AORI · Encerramento</span></div>
+    <div class="turn-title">Resumo completo com tom humanizado</div>
+    <div class="turn-desc">O encerramento inclui todos os próximos passos e o AORI reconhece o contexto emocional da solicitação.</div>
+    <div class="turn-highlight">"'Sentimos muito pelo falecimento' — o AORI tem contexto, não é uma máquina de ticket."</div>
+  </div>
+</div>
+
+<!-- ─────────────── INDÚSTRIA ─────────────── -->
+<!-- I1: Operação -->
+<div class="page" id="page-i1">
+  <div class="page-header">
+    <div class="vert-tag i">Indústria</div>
+    <h1>Problema na operação industrial</h1>
+    <div class="page-subtitle">Linha de produção parada — erro E-7731 no sistema MES</div>
+  </div>
+  <div class="card red">
+    <div class="card-title"><span class="card-icon">🏭</span>Cenário de maior urgência financeira</div>
+    <p style="font-size:12px;margin:0">R$15k/hora de perda. Use este cenário quando o cliente for de manufatura ou quando quiser demonstrar o AORI em contexto de alta pressão operacional com custo de parada visível.</p>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">MES · Sistemas Industriais</span><span class="agent-pill">ENG · Engenharia de Campo</span><span class="agent-pill">GES · Gestor de Incidentes</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 1 · <span class="turn-agent">AORI + Base histórica MES</span></div>
+    <div class="turn-title">8 ocorrências históricas em 12 meses — padrão identificado</div>
+    <div class="turn-desc">O AORI encontra 8 casos anteriores do E-7731. 6 deles com causa raiz idêntica: switch industrial. <strong>Destaque:</strong> o histórico transforma um código de erro genérico em diagnóstico com alta probabilidade.</div>
+    <div class="turn-highlight i">"Sem o AORI, isso seria uma investigação de horas. Com o Módulo 02, o padrão já está mapeado."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 2 · <span class="turn-agent">Agente MES acionado</span></div>
+    <div class="turn-title">Causa raiz e tempo médio de resolução histórico</div>
+    <div class="turn-desc">O Agente MES confirma a porta específica do switch (porta 7 em 4 dos 6 casos). Tempo médio de resolução com reset: 24 minutos. Engenharia de campo acionada em paralelo.</div>
+    <div class="turn-highlight i">"Dois agentes em paralelo — o MES diagnostica enquanto o engenheiro já está sendo despachado."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 3 · <span class="turn-agent">MES + Engenharia</span></div>
+    <div class="turn-title">Procedimento imediato enquanto o engenheiro não chega</div>
+    <div class="turn-desc">O AORI entrega o runbook em linguagem operacional — 4 passos numerados, com o que não fazer claramente indicado. ETA do engenheiro informado.</div>
+    <div class="turn-highlight i">"O runbook foi gerado pelo Módulo 02 com base nos 8 casos anteriores. Não é manual genérico — é específico para esse erro nessa linha."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 4 · <span class="turn-agent">Gestor de Incidentes acionado</span></div>
+    <div class="turn-title">Cálculo de impacto e comunicação executiva</div>
+    <div class="turn-desc">O Gestor de Incidentes entra calculando o impacto financeiro em tempo real e preparando o relatório executivo. <strong>Destaque:</strong> terceiro agente acionado automaticamente pelo Módulo 03.</div>
+    <div class="turn-highlight i">"O Diretor de Operações já vai receber o relatório antes de perguntar. Isso é gestão proativa de incidente."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interações 5–6 · <span class="turn-agent">Gestor + MES</span></div>
+    <div class="turn-title">Intervenção do engenheiro + confirmação de reconexão</div>
+    <div class="turn-desc">O AORI guia como confirmar a reconexão CLP-MES no log do sistema. O Agente MES monitorando o SCADA em tempo real.</div>
+    <div class="turn-highlight i">"O engenheiro não está sozinho — o Agente MES está guiando remotamente com base nos dados do SCADA ao vivo."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interações 7–8 · <span class="turn-agent">MES + AORI Encerramento</span></div>
+    <div class="turn-title">Calibração pós-reinicialização e retroalimentação do Módulo 02</div>
+    <div class="turn-desc">O Agente MES recomenda verificar parâmetros PID antes de retomar produção. O encerramento documenta a causa raiz e atualiza o runbook para resolução ainda mais rápida na próxima ocorrência.</div>
+    <div class="turn-highlight i">"O AORI aprende. Próxima ocorrência do E-7731 será diagnosticada em menos de 5 minutos."</div>
+  </div>
+</div>
+
+<!-- I2: Segurança -->
+<div class="page" id="page-i2">
+  <div class="page-header">
+    <div class="vert-tag i">Indústria</div>
+    <h1>Falha de segurança industrial</h1>
+    <div class="page-subtitle">SAFETY-LOCK nas prensas — protocolo NR12 ativado</div>
+  </div>
+  <div class="card red">
+    <div class="card-title"><span class="card-icon">⚠️</span>Cenário regulatório — alto valor para manufatura</div>
+    <p style="font-size:12px;margin:0">Demonstra o AORI em contexto onde a conformidade legal é crítica. O destaque é o Agente de Conformidade NR12 — especialista que o AORI aciona automaticamente quando identifica o protocolo de segurança.</p>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">SEG · Segurança Industrial</span><span class="agent-pill">ENG · Engenharia de Segurança</span><span class="agent-pill">NOR · Conformidade NR12</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 1 · <span class="turn-agent">AORI + Sistema SAFETY</span></div>
+    <div class="turn-title">O travamento é correto — não é falha do sistema</div>
+    <div class="turn-desc">O AORI valida que o SAFETY-LOCK funcionou como esperado. <strong>Ponto crítico:</strong> a primeira resposta não é "resolver o problema" — é garantir que a área não seja acessada indevidamente.</div>
+    <div class="turn-highlight i">"O AORI sabe que esse tipo de alarme não pode ser ignorado ou resetado sem inspeção. Isso é conformidade embutida."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 2 · <span class="turn-agent">Agente de Segurança</span></div>
+    <div class="turn-title">Log do alarme e causa identificada</div>
+    <div class="turn-desc">O Agente SEG encontra no log a hora exata e a zona específica da violação. Câmeras consultadas. Proibição de reset manual explicitada.</div>
+    <div class="turn-highlight i">"Ele consultou câmeras, log e barreiras simultaneamente — sem precisar que ninguém fosse verificar fisicamente primeiro."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interações 3–4 · <span class="turn-agent">SEG + Engenharia + NR12</span></div>
+    <div class="turn-title">Protocolo de liberação e 3 agentes ativos simultaneamente</div>
+    <div class="turn-desc">O protocolo NR12 exige inspeção, reset supervisionado e documentação formal. Três agentes acionados. <strong>Destaque máximo:</strong> o Agente NR12 aparece automaticamente — o AORI sabe que esse processo é regulatório.</div>
+    <div class="turn-highlight i">"Três especialistas trabalhando em paralelo. Em um fluxo manual, seriam três ligações e dois formulários diferentes."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interações 5–7 · <span class="turn-agent">Engenharia + NR12</span></div>
+    <div class="turn-title">Reset supervisionado e documentação obrigatória</div>
+    <div class="turn-desc">O AORI guia o reset com as palavras exatas do protocolo. O Agente NR12 registra cada passo para o dossiê de segurança obrigatório.</div>
+    <div class="turn-highlight i">"A documentação NR12 está sendo gerada em tempo real. Sem risco de não conformidade por falta de registro."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 8 · <span class="turn-agent">AORI · Encerramento</span></div>
+    <div class="turn-title">Recomendação proativa de treinamento</div>
+    <div class="turn-desc">O AORI recomenda treinamento de reforço sobre zona de exclusão e oferece agendar via Agente de RH. <strong>Destaque:</strong> ação preventiva proativa, não apenas reativa.</div>
+    <div class="turn-highlight i">"O AORI não apenas resolve — ele sugere o que fazer para isso não voltar a acontecer."</div>
+  </div>
+</div>
+
+<!-- I3: Conectividade -->
+<div class="page" id="page-i3">
+  <div class="page-header">
+    <div class="vert-tag i">Indústria</div>
+    <h1>Conectividade industrial</h1>
+    <div class="page-subtitle">Rede OT instável — broadcast storm por sensor IoT mal configurado</div>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">NET · Redes Industriais</span><span class="agent-pill">INF · Infraestrutura</span><span class="agent-pill">SEC · Cibersegurança OT</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 1–2 · <span class="turn-agent">AORI + Agente de Redes</span></div>
+    <div class="turn-title">Padrão de broadcast storm identificado por análise de log</div>
+    <div class="turn-desc">O AORI correlaciona as desconexões com picos de tráfego broadcast na VLAN industrial — diagnóstico de camada 2 que normalmente exigiria um especialista de redes OT.</div>
+    <div class="turn-highlight i">"O padrão de 10-15 minutos é a assinatura de um broadcast storm. O AORI identificou isso nos logs antes do técnico chegar."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interação 3–4 · <span class="turn-agent">Agente de Infraestrutura + Cibersegurança OT</span></div>
+    <div class="turn-title">Sensor novo como causa + verificação de segurança paralela</div>
+    <div class="turn-desc">O Agente NET confirma o sensor novo como causa. O Agente de Cibersegurança OT é acionado em paralelo — porque qualquer anomalia de tráfego em rede industrial pode ter componente de segurança.</div>
+    <div class="turn-highlight i">"O AORI não assumiu que era apenas configuração — verificou segurança em paralelo. Isso é comportamento responsável em rede OT."</div>
+  </div>
+  <div class="turn-block i">
+    <div class="turn-num">Interações 5–8 · <span class="turn-agent">NET + Encerramento</span></div>
+    <div class="turn-title">Configuração correta, monitoramento e política de onboarding</div>
+    <div class="turn-desc">O AORI entrega a configuração técnica exata (IP, VLAN, Port Security) e ao encerrar gera automaticamente um checklist de onboarding de dispositivos IoT para evitar recorrências.</div>
+    <div class="turn-highlight i">"Configuração técnica precisa, não genérica. E um ativo novo: o checklist de onboarding que a empresa agora tem para sempre."</div>
+  </div>
+</div>
+
+<!-- ─────────────── TELECOM ─────────────── -->
+<!-- T1: Portabilidade -->
+<div class="page" id="page-t1">
+  <div class="page-header">
+    <div class="vert-tag t">Telecom</div>
+    <h1>Portabilidade corporativa</h1>
+    <div class="page-subtitle">12 linhas de diretores migrando da TIM para a Vivo com prazo de 15 dias</div>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">PRT · Portabilidade</span><span class="agent-pill">TEL · Técnico Telecom</span><span class="agent-pill">COM · Comercial Vivo</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block t">
+    <div class="turn-num">Interação 1 · <span class="turn-agent">AORI + ANATEL</span></div>
+    <div class="turn-title">Prazo viável confirmado com dados reais</div>
+    <div class="turn-desc">O AORI confirma que 15 dias é viável (média 2,8 dias por lote) e que 20 linhas podem ser processadas simultaneamente. Dados reais de operação, não promessa genérica.</div>
+    <div class="turn-highlight t">"Ele já calculou a viabilidade antes de qualquer pergunta. Isso passa confiança imediata."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interação 2–3 · <span class="turn-agent">Agente de Portabilidade</span></div>
+    <div class="turn-title">Verificação de elegibilidade — 11 de 12 aprovados</div>
+    <div class="turn-desc">O Agente PRT verifica individualmente os 12 números. Identifica que 1 está em carência (22 dias de 30 necessários). <strong>Destaque:</strong> verificação em lote com resultado granular por linha.</div>
+    <div class="turn-highlight t">"Sem o AORI, essa verificação seria feita manualmente uma por uma. Aqui foi em batch em menos de 1 segundo."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interação 4–5 · <span class="turn-agent">Técnico + Comercial</span></div>
+    <div class="turn-title">Janela de interrupção e planos individualizados</div>
+    <div class="turn-desc">O Técnico informa a janela de até 4 horas e recomenda madrugada. O Comercial analisa o perfil de uso de cada linha e sugere planos diferenciados com economia de R$1.200/mês.</div>
+    <div class="turn-highlight t">"Cada linha pode ter plano diferente. O Comercial analisou o histórico de consumo da TIM para sugerir o plano certo."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interações 6–8 · <span class="turn-agent">PRT + TEL + AORI Encerramento</span></div>
+    <div class="turn-title">Agendamento, rollback automático e 12º número</div>
+    <div class="turn-desc">O agendamento para madrugada é confirmado com rollback automático em caso de falha. O 12º número tem portabilidade automática agendada para 8 dias depois. Relatório enviado a TI e Financeiro.</div>
+    <div class="turn-highlight t">"R$14.400 de economia anual calculada e comunicada no encerramento. O AORI fecha o argumento de valor sozinho."</div>
+  </div>
+</div>
+
+<!-- T2: Serviços -->
+<div class="page" id="page-t2">
+  <div class="page-header">
+    <div class="vert-tag t">Telecom</div>
+    <h1>Contratação de serviços extras</h1>
+    <div class="page-subtitle">Dados + roaming para executivos e linha M2M para sistema de alarme</div>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">COM · Comercial</span><span class="agent-pill">TEL · Técnico Telecom</span><span class="agent-pill">IOT · IoT · M2M</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block t">
+    <div class="turn-num">Interação 1 · <span class="turn-agent">AORI · Decomposição da demanda</span></div>
+    <div class="turn-title">Três produtos distintos — agentes diferentes para cada</div>
+    <div class="turn-desc">O AORI identifica que a demanda contém 3 produtos distintos e decomp​õe automaticamente antes de responder. <strong>Destaque:</strong> o Módulo 01 não trata tudo igual — ele diferencia roaming corporativo de linha M2M.</div>
+    <div class="turn-highlight t">"Ele reconheceu que a linha M2M para alarme é um produto completamente diferente de uma linha executiva. Isso é inteligência de domínio."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interações 2–4 · <span class="turn-agent">Agente Comercial + IoT M2M</span></div>
+    <div class="turn-title">Pool de dados, roaming e linha M2M com specs técnicas</div>
+    <div class="turn-desc">O Comercial apresenta opções de pool com análise de custo por executivo. O Agente IoT explica a linha M2M com APN específica, IP fixo e priorização de tráfego de emergência.</div>
+    <div class="turn-highlight t">"O Agente IoT não é o mesmo que o Comercial — é um especialista em dispositivos. O AORI sabe qual convocar."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interações 5–8 · <span class="turn-agent">TEL + Encerramento</span></div>
+    <div class="turn-title">Configuração técnica, NF por centro de custo e ativação</div>
+    <div class="turn-desc">APN fornecida, ativação em 24h úteis, NFs por centro de custo confirmadas. Resumo financeiro apresentado no encerramento com valor total consolidado.</div>
+    <div class="turn-highlight t">"O cliente não precisou entender de M2M ou APN. O AORI trouxe o especialista certo e resumiu em linguagem de negócio."</div>
+  </div>
+</div>
+
+<!-- T3: Sinal -->
+<div class="page" id="page-t3">
+  <div class="page-header">
+    <div class="vert-tag t">Telecom</div>
+    <h1>Problema com sinal de internet</h1>
+    <div class="page-subtitle">Link dedicado 500Mbps com 2% de capacidade — 200 funcionários impactados</div>
+  </div>
+  <div class="card red">
+    <div class="card-title"><span class="card-icon">📡</span>Cenário de maior impacto corporativo em Telecom</div>
+    <p style="font-size:12px;margin:0">200 funcionários impactados, SLA violado e compensação automática. Use este cenário quando o cliente for operadora, ISP, ou empresa com link dedicado contratado.</p>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Agentes neste cenário</div>
+    <p><span class="agent-pill">NOC · Monitoramento</span><span class="agent-pill">TEC · Engenheiro de Campo</span><span class="agent-pill">SLA · Compensação</span></p>
+  </div>
+  <h2>Roteiro por interação</h2>
+  <div class="turn-block t">
+    <div class="turn-num">Interação 1 · <span class="turn-agent">AORI + Monitoramento de circuito</span></div>
+    <div class="turn-title">2% da capacidade = violação de SLA imediata</div>
+    <div class="turn-desc">O AORI calcula imediatamente que 10Mbps de 500Mbps contratados é 2% — e que o SLA garante mínimo de 70%. Incidente prioritário aberto automaticamente. <strong>Destaque:</strong> o AORI sabe o SLA contratado.</div>
+    <div class="turn-highlight t">"Ele não apenas recebeu a reclamação — ele já sabia que era violação de SLA e abriu incidente prioritário em paralelo."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interações 2–3 · <span class="turn-agent">Agente NOC + SLA</span></div>
+    <div class="turn-title">OSNR abaixo do limiar + compensação automática iniciada</div>
+    <div class="turn-desc">O Agente NOC identifica problema físico (não congestionamento). O Agente SLA entra calculando a compensação automaticamente: 12h30 de violação = 1,5 dia de crédito.</div>
+    <div class="turn-highlight t">"Dois agentes em paralelo — um diagnosticando, outro já calculando a compensação. O cliente não precisa pedir."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interação 4 · <span class="turn-agent">NOC · Contingência 4G</span></div>
+    <div class="turn-title">Ativação de contingência sem custo adicional</div>
+    <div class="turn-desc">O AORI ativa remotamente a expansão do plano 4G corporativo de 50GB para 200GB — dentro do SLA de contorno, sem custo extra. <strong>Destaque máximo:</strong> ação proativa durante o diagnóstico.</div>
+    <div class="turn-highlight t">"Enquanto o engenheiro está indo ao local, o AORI já garantiu continuidade operacional. Isso é o que diferencia um orquestrador de um sistema de tickets."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interações 5–7 · <span class="turn-agent">Engenheiro de Campo + NOC</span></div>
+    <div class="turn-title">OTDR em tempo real + identificação da micro-ruptura</div>
+    <div class="turn-desc">O Agente NOC guia o engenheiro remotamente com base nos dados OTDR ao vivo. Micro-ruptura térmica confirmada no trecho de acesso vertical.</div>
+    <div class="turn-highlight t">"O engenheiro de campo não está sozinho — o NOC está guiando remotamente com medições ao vivo. Isso reduz o tempo de localização do problema."</div>
+  </div>
+  <div class="turn-block t">
+    <div class="turn-num">Interação 8 · <span class="turn-agent">AORI · Encerramento</span></div>
+    <div class="turn-title">498Mbps restaurados + crédito aplicado automaticamente</div>
+    <div class="turn-desc">499Mbps de capacidade restaurada (99,6%). Crédito de 1,5 dia aplicado automaticamente na próxima fatura. Dados 4G desativados. Relatório completo gerado.</div>
+    <div class="turn-highlight t">"O crédito foi aplicado sem o cliente precisar ligar de volta para cobrar. O SLA é executado automaticamente."</div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="page" id="page-faq">
+  <div class="page-header">
+    <div class="vert-tag faq">Transversal</div>
+    <h1>FAQ Técnico</h1>
+    <div class="page-subtitle">Respostas preparadas para as perguntas mais frequentes durante demos</div>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">Como usar</div>
+    <p>Clique em cada pergunta para ver a resposta recomendada. Adapte o tom ao perfil do interlocutor (técnico vs. executivo).</p>
+  </div>
+
+  <h2>Integração e arquitetura</h2>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Como o AORI se integra com os sistemas que já temos (SAP, Salesforce, ServiceNow)?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">O AORI se conecta via API REST ou webhooks com qualquer sistema que tenha interface de integração — o que inclui SAP, Salesforce, ServiceNow, TOTVS, Zendesk e sistemas legados com adaptadores. A camada de integração usa o <strong>API Manager + iPaaS</strong> da arquitetura AORI, que normaliza os dados antes de chegarem ao orquestrador. O prazo de integração varia de 2 semanas (sistemas com API bem documentada) a 6 semanas (legados com adaptadores customizados).</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">O AORI roda na nuvem ou pode ser instalado on-premise?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">O AORI foi projetado para ambientes <strong>cloud, on-premise e híbridos</strong>. Em Utilities e Indústria, onde há exigências de soberania de dados ou conectividade limitada, o modelo híbrido é o mais comum: o núcleo orquestrador roda on-premise e os agentes de menor criticidade usam cloud. A decisão de arquitetura faz parte da fase de Discovery.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Quanto tempo leva para implantar?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">O modelo de go-to-market tem 4 fases: <strong>Discovery (2 semanas)</strong> — mapeamento de domínios e sistemas; <strong>PoC (4–6 semanas)</strong> — 1 ou 2 domínios em ambiente controlado; <strong>Implementação (8–16 semanas)</strong> — rollout por domínio; <strong>Sustentação</strong> — evolução contínua. O cliente começa a ver valor na fase de PoC, não no final do projeto.</div>
+  </div>
+
+  <h2>Segurança e LGPD</h2>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Como o AORI trata dados sensíveis de clientes finais? E a LGPD?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">O AORI opera com <strong>pseudonimização e minimização de dados</strong> — os agentes recebem apenas os dados necessários para a tarefa específica, não o perfil completo do cliente. Logs de processamento seguem as políticas de retenção definidas pelo cliente. Para dados de saúde (como no Protocolo Vital), há isolamento de dado com acesso restrito por papel. A implantação inclui uma análise de impacto de privacidade (DPIA) como etapa formal.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Quem tem acesso às conversas e aos dados processados pelo AORI?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">O controle de acesso é totalmente configurável pelo cliente. Em operação padrão: <strong>agentes têm acesso apenas ao contexto do chamado em andamento</strong>; supervisores e gestores têm acesso a dashboards analíticos; auditores têm acesso ao log completo com rastreabilidade de cada decisão. Nenhum dado do cliente sai do ambiente contratado para treinamento de modelos de terceiros.</div>
+  </div>
+
+  <h2>Comparações e diferenciação</h2>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Qual a diferença do AORI para RPA (automação robótica)?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">RPA executa <strong>roteiros fixos e pré-programados</strong> — funciona enquanto o cenário é exatamente como esperado. O AORI <strong>raciocina sobre o contexto</strong> — ele lida com variações, exceções e situações novas. Além disso, RPA tipicamente executa uma tarefa por vez; o AORI orquestra múltiplos agentes especializados em paralelo. Em termos práticos: RPA automatiza tarefas, o AORI resolve problemas.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Qual a diferença para um chatbot convencional de atendimento?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">Chatbots respondem perguntas. O AORI <strong>resolve demandas</strong>. A diferença é que o chatbot é o canal — o AORI é o orquestrador que está atrás de qualquer canal. O AORI pode usar um chatbot como interface de entrada, mas o que diferencia é o que acontece depois: diagnóstico por padrão histórico, acionamento de agentes especializados, integração com sistemas operacionais e documentação automática.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Qual o ROI esperado?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">Benchmarks de mercado (Gartner, Zendesk 2024): <strong>redução de 30–45% nos chamados que chegam a agente humano</strong>, redução de 40–60% no tempo médio de resolução, e ROI médio de 3,5x (top performers chegam a 8x). Para Utilities, o Protocolo Vital já demonstra redução de risco regulatório que é difícil de quantificar mas materialmente relevante. O Discovery inclui um modelo de ROI personalizado com os dados reais do cliente.</div>
+  </div>
+
+  <h2>Escala e evolução</h2>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Começa com quantos domínios? Como expande?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">A recomendação é começar com <strong>1 ou 2 domínios de maior volume e dor</strong> na fase de PoC. A arquitetura modular do AORI permite adicionar novos domínios (IT, RH, Financeiro, Jurídico, etc.) sem redesenhar o núcleo. O modelo de expansão é por domínio: cada novo domínio adiciona agentes especializados que o orquestrador central já sabe como coordenar.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">O AORI fica mais inteligente com o tempo?<span class="faq-arrow">▼</span></div>
+    <div class="faq-a">Sim — pelo Módulo 02 (Padrões e Causas). A cada chamado encerrado, o diagnóstico e a resolução são documentados e retroalimentam a base de padrões. Isso significa que o segundo incidente idêntico é resolvido mais rápido que o primeiro, e o décimo pode ser <strong>prevenido antes de acontecer</strong> (detecção preventiva). É um sistema que aprende com a operação real do cliente, não com dados genéricos.</div>
+  </div>
+</div>
+
+<!-- OBJEÇÕES -->
+<div class="page" id="page-objecoes">
+  <div class="page-header">
+    <div class="vert-tag faq">Apoio ao Consultor</div>
+    <h1>Objeções e respostas</h1>
+    <div class="page-subtitle">Como lidar com as objeções mais comuns sem sair do fluxo da demo</div>
+  </div>
+  <div class="warn-box">
+    <div class="tip-label">Princípio geral</div>
+    <p>Nunca interrompa a demo para responder uma objeção longa. Reconheça, ancore na demonstração e ofereça aprofundamento no final. "Ótima pergunta — você vai ver isso na próxima interação" é sempre melhor que uma resposta técnica de 3 minutos no meio da demo.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title"><span class="card-icon">🤔</span>"Nossa operação é muito específica — isso funciona aqui?"</div>
+    <p style="font-size:12px;margin:0"><strong>Resposta:</strong> "O AORI é um orquestrador, não um produto pronto. O que você viu aqui é a arquitetura — os agentes, os domínios e os runbooks são configurados com o conhecimento da sua operação. O Discovery existe exatamente para mapear isso antes de construir qualquer coisa."</p>
+  </div>
+  <div class="card warn">
+    <div class="card-title"><span class="card-icon">🤔</span>"Já temos um sistema de atendimento. Por que mudar?"</div>
+    <p style="font-size:12px;margin:0"><strong>Resposta:</strong> "O AORI não substitui necessariamente o sistema de atendimento — ele se posiciona como a camada de inteligência acima dele. O Zendesk, ServiceNow ou sistema legado continua recebendo os chamados; o AORI é quem decide o que fazer com cada um, em quanto tempo e com quais agentes."</p>
+  </div>
+  <div class="card warn">
+    <div class="card-title"><span class="card-icon">🤔</span>"E se a IA errar?"</div>
+    <p style="font-size:12px;margin:0"><strong>Resposta:</strong> "O AORI tem escores de confiança — você viu no painel lateral. Quando a confiança está abaixo do limiar configurado, ele escala automaticamente para um humano antes de agir. E cada ação que o AORI toma é auditável: você sabe exatamente por que cada decisão foi tomada, com qual base de dados, em qual momento."</p>
+  </div>
+  <div class="card warn">
+    <div class="card-title"><span class="card-icon">🤔</span>"Quanto custa?"</div>
+    <p style="font-size:12px;margin:0"><strong>Resposta:</strong> "O modelo de precificação é construído no Discovery com base no volume de domínios, chamados e integrações. O que posso dizer agora é que o modelo não é por usuário — é por resultado. E o Discovery em si já entrega um modelo de ROI detalhado para você apresentar internamente."</p>
+  </div>
+  <div class="card warn">
+    <div class="card-title"><span class="card-icon">🤔</span>"Quanto tempo para ver resultado?"</div>
+    <p style="font-size:12px;margin:0"><strong>Resposta:</strong> "Na PoC, entre 4 e 6 semanas, você já tem o AORI operando em 1 ou 2 domínios com dados reais. Os primeiros KPIs aparecem nessa fase — não no final do projeto. O modelo de go-to-market foi desenhado para que você valide o valor antes de escalar."</p>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /layout -->
+
+<script>
+function show(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
+  var page=document.getElementById('page-'+id);
+  if(page)page.classList.add('active');
+  var clicked=event.currentTarget;
+  if(clicked)clicked.classList.add('active');
+  document.querySelector('.content').scrollTop=0;
+}
+function toggleFaq(el){
+  el.classList.toggle('open');
+}
+// Set init time
+document.querySelector('.tb-right').textContent='Eng Brasil \u00b7 Vers\u00e3o 1.0 \u00b7 2025';
+</script>
+</body>
+</html>
